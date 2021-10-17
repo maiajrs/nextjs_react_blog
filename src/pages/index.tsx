@@ -1,4 +1,5 @@
 import { GetStaticProps } from 'next';
+import Prismic from '@prismicio/client';
 
 import { getPrismicClient } from '../services/prismic';
 
@@ -28,9 +29,11 @@ export default function Home() {
   return <h1>Hello Blog!</h1>;
 }
 
-// export const getStaticProps = async () => {
-//   // const prismic = getPrismicClient();
-//   // const postsResponse = await prismic.query(TODO);
-
-//   // TODO
-// };
+export const getStaticProps = async ({ req }) => {
+  const prismic = getPrismicClient(req);
+  const postsResponse = await prismic.query(
+    Prismic.Predicates.at('document.type', 'posts'),
+    {}
+  );
+  console.log(postsResponse);
+};
