@@ -29,11 +29,18 @@ export default function Home() {
   return <h1>Hello Blog!</h1>;
 }
 
-export const getStaticProps = async ({ req }) => {
-  const prismic = getPrismicClient(req);
+export const getStaticProps: GetStaticProps = async () => {
+  const prismic = getPrismicClient();
   const postsResponse = await prismic.query(
-    Prismic.Predicates.at('document.type', 'posts'),
-    {}
+    [Prismic.predicates.at('document.type', 'posts')],
+    {
+      fetch: ['posts.title', 'posts.content'],
+      pageSize: 100,
+    }
   );
   console.log(postsResponse);
+  console.log('oi');
+  return {
+    props: {},
+  };
 };
