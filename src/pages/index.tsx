@@ -2,6 +2,7 @@ import { GetStaticProps } from 'next';
 import { useState } from 'react';
 import Prismic from '@prismicio/client';
 import { FiCalendar, FiUser } from 'react-icons/fi';
+import Link from 'next/link';
 
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -45,8 +46,12 @@ export default function Home({ postsPagination }: HomeProps) {
     <main className={styles.container}>
       {results?.map(post => (
         <section key={post.uid} className={styles.content}>
-          <h1>{post.data.title}</h1>
-          <p>{post.data.subtitle}</p>
+          <Link href={`post/${post.uid}`}>
+            <a>
+              <h1>{post.data.title}</h1>
+              <p>{post.data.subtitle}</p>
+            </a>
+          </Link>
           <div className={styles.info}>
             <span>
               <FiCalendar size={20} />{' '}
