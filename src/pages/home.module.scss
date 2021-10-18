@@ -1,1 +1,46 @@
-// TODO
+.container {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 105px);
+  margin: 0 auto;
+}
+
+.content {
+  width: 100%;
+  margin-bottom: 3rem;
+
+  h1 {
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    font-size: 1.75rem;
+    letter-spacing: -0.5px;
+    color: var(--heading);
+  }
+
+  p {
+    font-size: 1.125rem;
+    line-height: 1.375rem;
+    margin-bottom: 1.5rem;
+  }
+
+  div {
+    display: flex;
+    align-items: center;
+
+    span {
+      font-size: 0.875rem;
+      display: inline-block;
+
+      svg {
+        margin-right: 0.2rem;
+        margin-bottom: -2px;
+      }
+
+      & + span {
+        margin-left: 1rem;
+      }
+    }
+  }
+}
+
