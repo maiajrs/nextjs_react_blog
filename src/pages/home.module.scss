@@ -10,6 +10,10 @@
   width: 100%;
   margin-bottom: 3rem;
 
+  a:hover {
+    color: var(--highlight);
+  }
+
   h1 {
     margin-bottom: 0.5rem;
     font-weight: 700;
