@@ -1,5 +1,6 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 
+import Prismic from '@prismicio/client';
 import { getPrismicClient } from '../../services/prismic';
 
 import commonStyles from '../../styles/common.module.scss';
@@ -26,20 +27,30 @@ interface PostProps {
   post: Post;
 }
 
-// export default function Post() {
-//   // TODO
-// }
+export default function Post() {
+  return <h1>Page Post in construction</h1>;
+}
 
-// export const getStaticPaths = async () => {
-//   const prismic = getPrismicClient();
-//   const posts = await prismic.query(TODO);
+export const getStaticPaths: GetStaticPaths = async () => {
+  const prismic = getPrismicClient();
+  const posts = await prismic.query(
+    [Prismic.predicates.at('document.type', 'posts')],
+    {
+      pageSize: 100,
+      orderings: '[document.last_publication_date desc]',
+    }
+  );
+  const slugs = posts.results.map(post => ({
+    params: { slug: post.uid },
+  }));
+  return { paths: slugs, fallback: 'blocking' };
+};
 
-//   // TODO
-// };
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  console.log(params);
+  const prismic = getPrismicClient();
 
-// export const getStaticProps = async context => {
-//   const prismic = getPrismicClient();
-//   const response = await prismic.getByUID(TODO);
+  // const response = await prismic.getByUID(TODO);
 
-//   // TODO
-// };
+  return { props: {} };
+};
