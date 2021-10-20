@@ -1,6 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
 
-import { FiCalendar, FiUser } from 'react-icons/fi';
+import { FiClock, FiCalendar, FiUser } from 'react-icons/fi';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import Prismic from '@prismicio/client';
@@ -11,7 +12,9 @@ import styles from './post.module.scss';
 
 interface Post {
   first_publication_date: string | null;
+  uid: string
   data: {
+    subtitle: string
     title: string;
     banner: {
       url: string;
@@ -31,6 +34,23 @@ interface PostProps {
 }
 
 export default function Post({ post }: PostProps) {
+  const router = useRouter();
+
+  if (router.isFallback) {
+    return <div>Carregando...</div>;
+  }
+
+  function timeReading(content) {
+    const total = content?.reduce((acc, next) => {
+      next.body.forEach(ArrayExteno => {
+        acc += ArrayExteno.text.split(/[ ]/).length;
+      });
+
+      return acc;
+    }, 0);
+
+    return Math.ceil((total / 200))
+  }
   return (
     <div className={styles.container}>
       <div className={styles.banner}>
@@ -50,8 +70,11 @@ export default function Post({ post }: PostProps) {
           </span>
           <span>
             <FiUser size={20} />
-            Autor
             {post.data.author}
+          </span>
+          <span>
+            <FiClock size={20} />
+            {timeReading(post.data.content)} min
           </span>
         </div>
         <section className={styles.section}>
@@ -81,7 +104,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const slugs = posts.results.map(post => ({
     params: { slug: post.uid },
   }));
-  return { paths: slugs, fallback: 'blocking' };
+  return { paths: slugs, fallback: true };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
@@ -94,19 +117,19 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const post = {
     first_publication_date: response.first_publication_date,
+    uid: response.uid,
     data: {
       title: response.data.title,
+      subtitle: response.data.subtitle,
       banner: {
         url: response.data.banner.url,
       },
       author: response.data.author,
       content: response.data.content.map(content => ({
         heading: content.heading,
-        body: content.body.map(text => ({
-          text: text.text,
-        })),
-      })),
-    },
-  };
+        body: content.body.map(spans => spans)
+      }))
+    }
+  }
   return { props: { post } };
 };
