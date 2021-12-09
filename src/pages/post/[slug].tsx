@@ -1,4 +1,5 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import { FiClock, FiCalendar, FiUser } from 'react-icons/fi';
@@ -30,10 +31,11 @@ interface Post {
 }
 
 interface PostProps {
+  preview: boolean;
   post: Post;
 }
 
-export default function Post({ post }: PostProps) {
+export default function Post({ post, preview }: PostProps) {
   const router = useRouter();
 
   if (router.isFallback) {
@@ -89,6 +91,13 @@ export default function Post({ post }: PostProps) {
           ))}
         </section>
         <Comments />
+        {preview && (
+          <aside>
+            <Link href="/api/exit-preview">
+              <a>Sair do modo Preview</a>
+            </Link>
+          </aside>
+        )}
       </main>
     </div>
   );
@@ -109,12 +118,17 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths: slugs, fallback: true };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async ({
+  params,
+  preview = false,
+  previewData,
+}) => {
   const { slug } = params;
   const prismic = getPrismicClient();
 
   const response = await prismic.getByUID('posts', `${slug}`, {
     lang: 'pt-BR',
+    ref: previewData?.ref ?? null,
   });
 
   const post = {
@@ -133,5 +147,5 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       })),
     },
   };
-  return { props: { post } };
+  return { props: { post, preview } };
 };
