@@ -7,14 +7,14 @@ import ptBR from 'date-fns/locale/pt-BR';
 import Prismic from '@prismicio/client';
 import { getPrismicClient } from '../../services/prismic';
 
-import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
+import Comments from '../../components/Comments';
 
 interface Post {
   first_publication_date: string | null;
-  uid: string
+  uid: string;
   data: {
-    subtitle: string
+    subtitle: string;
     title: string;
     banner: {
       url: string;
@@ -43,13 +43,14 @@ export default function Post({ post }: PostProps) {
   function timeReading(content) {
     const total = content?.reduce((acc, next) => {
       next.body.forEach(ArrayExteno => {
+        // eslint-disable-next-line no-param-reassign
         acc += ArrayExteno.text.split(/[ ]/).length;
       });
 
       return acc;
     }, 0);
 
-    return Math.ceil((total / 200))
+    return Math.ceil(total / 200);
   }
   return (
     <div className={styles.container}>
@@ -87,6 +88,7 @@ export default function Post({ post }: PostProps) {
             </div>
           ))}
         </section>
+        <Comments />
       </main>
     </div>
   );
@@ -127,9 +129,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       author: response.data.author,
       content: response.data.content.map(content => ({
         heading: content.heading,
-        body: content.body.map(spans => spans)
-      }))
-    }
-  }
+        body: content.body.map(spans => spans),
+      })),
+    },
+  };
   return { props: { post } };
 };
